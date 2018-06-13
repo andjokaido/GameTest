@@ -1,0 +1,36 @@
+personnage.dat
+nom
+niveau xp
+degatsNaturels
+nbOr orMax
+emplacementInv
+idItem nbItem
+ArbreDeCompetence
+
+
+jeu.dat
+nbTour
+
+
+arbre_de_competence.dat
+nbBranche
+nomBranche
+nbCompetence
+NomAttaque
+degatAttaque manaRequit tempsRechargement
+
+
+liste_objet.dat
+nb_categorie
+nb_sous_categorie
+nb_item
+nomItem
+prix_vente_pnj
+
+armes
+armures
+misc item
+	Drop
+potions
+	vie
+	mana
