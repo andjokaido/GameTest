@@ -25,7 +25,8 @@ int main(void) {
     int test; //Varible de test pour stoper le programme avec un cin >> test
     int numero1,numero2,numero3;
     char option;
-    Jeu* jeu=new Jeu();
+    Jeu jeu;
+    Attaque* tmp_atq;
 
     //Debut du jeu
     do {
@@ -40,57 +41,58 @@ int main(void) {
 
         switch (option) {
             case '0' :
-                jeu->changerMonstre();
+                jeu.changerMonstre();
                 //On entre dans le boucle seulement si le joueur et le monstre est vivant
-                while (jeu->getMonstre()->enVie() && jeu->getJoueur()->enVie()) {
+                while (jeu.getMonstre()->enVie() && jeu.getJoueur()->enVie()) {
                     //Transition pour montrer en meme temps à quel tour nous sommes
-                    transition(jeu->getTour());
-                    //Affichage des statistiques du personnages
-                    jeu->getJoueur()->afficherEtat();
+                    transition(jeu.getTour());
+                    //Affichage les statistiques du personnages
+                    jeu.getJoueur()->afficherEtat();
 
                     //Si il y a des attaques disponibles pour le joueur
-                    if (jeu->getJoueur()->attaqueDisponible(jeu->getTour())) {
+                    if (jeu.getJoueur()->attaqueDisponible(jeu.getTour())) {
                         //Recupération du numéro d'attaque que le joueur veut utiliser
                         do {
                             do {
                                 cout << "Quel attaque utiliser ? :";
                                 cin >> numero1;
                             //Tant que le joueur ne donne pas une attaque qui existe ou lui redemande
-                            } while (numero1<0 || numero1>=jeu->getJoueur()->getNbAttaque());
+                            } while (numero1<0 || numero1>=jeu.getJoueur()->getNbAttaque());
                         //On test par la suite si le joueur a suffisament de mana ou que la capacité soit rechargée
-                        } while (jeu->getJoueur()->getManaCourrant()<(jeu->getJoueur()->getAttaque(numero1))->getManaRequit() || jeu->getTour()<(jeu->getJoueur()->getAttaque(numero1))->getPossibiliteReutilisation());
+                            tmp_atq=jeu.getJoueur()->getAttaque(numero1);
+                        } while (jeu.getJoueur()->getManaCourrant()<tmp_atq->getManaRequit() || jeu.getTour()<tmp_atq->getPossibiliteReutilisation());
 
                         //Attaque du joueur avec la capacité demandé
-                        jeu->getJoueur()->attaquer(jeu->getMonstre(),jeu->getJoueur()->getAttaque(numero1));
+                        jeu.getJoueur()->attaquer(jeu.getMonstre(),jeu.getJoueur()->getAttaque(numero1));
                         //Mise en place du temps de rechargement de l'attaque
-                        (jeu->getJoueur()->getAttaque(numero1))->setPossibiliteReutilisation(jeu->getTour());
+                        (jeu.getJoueur()->getAttaque(numero1))->setPossibiliteReutilisation(jeu.getTour());
                     } else {
                         cout << "Vous n'avez pas d'attaque disponible" << endl
                              << "Le monstre joue un tour" << endl << endl;
                     }
 
                     //Test pour savoir si le monstre peut attaquer
-                    if (jeu->getMonstre()->enVie() && jeu->getMonstre()->getChargement()<=jeu->getTour()) {
+                    if (jeu.getMonstre()->enVie() && jeu.getMonstre()->getChargement()<=jeu.getTour()) {
                         //Attaque du monstre sur le joueur
-                        jeu->getMonstre()->attaquer(jeu->getJoueur());
+                        jeu.getMonstre()->attaquer(jeu.getJoueur());
                         //Mise en place de son temps de rechargement
-                        jeu->getMonstre()->setChargement(jeu->getTour());
+                        jeu.getMonstre()->setChargement(jeu.getTour());
                     }
 
                     //Affichage des statistique du monstre
-                    jeu->getMonstre()->afficherEtat();
+                    jeu.getMonstre()->afficherEtat();
                     //Augmentetion du nombre de tour
-                    jeu->addTour();
+                    jeu.addTour();
                     //Soin de mana a chaque tour
-                    jeu->getJoueur()->addManaCourrant(10);
+                    jeu.getJoueur()->addManaCourrant(10);
                 }
                 //Soin du joueur après avoir battue un monstre si il est enore en vie
-                if (jeu->getJoueur()->enVie())
-                    jeu->getJoueur()->addVieCourrante(90);
+                if (jeu.getJoueur()->enVie())
+                    jeu.getJoueur()->addVieCourrante(90);
             break;
 
             case '1' :
-                jeu->getJoueur()->getInventaire()->afficherInventaire();
+                jeu.getJoueur()->getInventaire()->afficherInventaire();
                 cout << endl << endl;
             break;
 
@@ -102,28 +104,28 @@ int main(void) {
                 } while (option != 'a' && option != 'v');
 
                 if (option == 'a') {
-                    if (jeu->getJoueur()->getInventaire()->plein())
+                    if (jeu.getJoueur()->getInventaire()->plein())
                         cout << "Videz d'abord votre inventaire" << endl;
                     else {
-                        jeu->getVendeur()->afficherVendeur();
+                        jeu.getVendeur()->afficherVendeur();
                         do {
                             cout << "Quel objet voulez-vous acheter ?";
                             cin >> numero1;
-                        } while (numero1<0 || numero1>=jeu->getVendeur()->getTableDeVente()->getNbVente());
-                        if (jeu->getJoueur()->getInventaire()->getNbOr()>=jeu->getVendeur()->getTableDeVente()->getListeVente()[numero1]->getPrixVente()) {
-                            jeu->getJoueur()->achatPNJ(jeu->getVendeur()->getTableDeVente()->getListeVente()[numero1]);
+                        } while (numero1<0 || numero1>=jeu.getVendeur()->getTableDeVente()->getNbVente());
+                        if (jeu.getJoueur()->getInventaire()->getNbOr()>=jeu.getVendeur()->getTableDeVente()->getListeVente()[numero1]->getPrixVente()) {
+                            jeu.getJoueur()->achatPNJ(jeu.getVendeur()->getTableDeVente()->getListeVente()[numero1]);
                             cout << "Voici " 
-                                 << jeu->getVendeur()->getTableDeVente()->getListeVente()[numero1]->getQuantiteVente() << " "
-                                 << jeu->getVendeur()->getTableDeVente()->getListeVente()[numero1]->getItemVente()->getNomObjet() << endl;
+                                 << jeu.getVendeur()->getTableDeVente()->getListeVente()[numero1]->getQuantiteVente() << " "
+                                 << jeu.getVendeur()->getTableDeVente()->getListeVente()[numero1]->getItemVente()->getNomObjet() << endl;
                         } else {
                             cout << "Vous n'avez pas assez d'argent pour m'acheter celà." << endl;
                         }
                     }
                 } else {
-                    jeu->getJoueur()->getInventaire()->afficherInventaire();
+                    jeu.getJoueur()->getInventaire()->afficherInventaire();
                     cout << endl << endl;
                     cout << "Quel objet voulez-vous me vendre ?" << endl;
-                    numero3=jeu->getJoueur()->getInventaire()->getNbEmplacement();
+                    numero3=jeu.getJoueur()->getInventaire()->getNbEmplacement();
                     do {
                         cout << "Ligne : ";
                         cin >> numero1;
@@ -133,40 +135,40 @@ int main(void) {
                         cout << "Colonne :";
                         cin >> numero2;
                     } while (numero2<0 || numero2>numero3);
-                    if (jeu->getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getQuantite()==0) {
+                    if (jeu.getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getQuantite()==0) {
                         cout << "Vous me proposer du vide !" << endl;
-                    } else if (jeu->getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getQuantite()==1) {
-                        cout << "Voici " << jeu->getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getItem()->getPrixPNJ() << " pièce d'or" << endl;
+                    } else if (jeu.getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getQuantite()==1) {
+                        cout << "Voici " << jeu.getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getItem()->getPrixPNJ() << " pièce d'or" << endl;
                     } else {
                         do {
                             cout << "Combien voulez-vous m'en vendre ?";
                             cin >> numero3;
-                        } while (numero3 < 1 || numero3 > jeu->getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getQuantite());
+                        } while (numero3 < 1 || numero3 > jeu.getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getQuantite());
 
                         cout << "Très bien voici ";
-                        if (numero3*jeu->getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getItem()->getPrixPNJ()==1) {
+                        if (numero3*jeu.getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getItem()->getPrixPNJ()==1) {
                             cout << " pièce d'or." << endl;
                         } else {
-                            cout << numero3*jeu->getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getItem()->getPrixPNJ()
+                            cout << numero3*jeu.getJoueur()->getInventaire()->getInventaire()[numero1][numero2]->getItem()->getPrixPNJ()
                                  << " pièces d'or." << endl;
                         }
                     }
-                    jeu->getJoueur()->getInventaire()->vendreObjetPNJ(numero1,numero2,numero3);
+                    jeu.getJoueur()->getInventaire()->vendreObjetPNJ(numero1,numero2,numero3);
                 }
             break;
 
             case '3' :
-                jeu->getJoueur()->getArbreDeCompetence()->afficherBranches();
+                jeu.getJoueur()->getArbreDeCompetence()->afficherBranches();
                 do {
                     cout << endl << "Quel branche souhaitez vous voir ?";
                     cin >> numero1;
-                } while(numero1 < 0 || numero1 > jeu->getJoueur()->getArbreDeCompetence()->getNbBranche()-1);
+                } while(numero1 < 0 || numero1 > jeu.getJoueur()->getArbreDeCompetence()->getNbBranche()-1);
                 //clear_screen();
-                jeu->getJoueur()->getArbreDeCompetence()->getBranche()[numero1]->afficherBranche();
+                jeu.getJoueur()->getArbreDeCompetence()->getBranche()[numero1]->afficherBranche();
                 cout << "Point de competence : ";
-                cout << jeu->getJoueur()->getPointCompetenceUtilisee() << " / "
-                     << jeu->getJoueur()->getNiveau() << endl;
-                if (jeu->getJoueur()->getPointCompetenceUtilisee()<jeu->getJoueur()->getNiveau()) {
+                cout << jeu.getJoueur()->getPointCompetenceUtilisee() << " / "
+                     << jeu.getJoueur()->getNiveau() << endl;
+                if (jeu.getJoueur()->getPointCompetenceUtilisee()<jeu.getJoueur()->getNiveau()) {
                     cout << "Voulez-vous débloquer une recompense ? o/n : ";
                     cin >> option;
                     cout << endl;
@@ -174,9 +176,9 @@ int main(void) {
                         do {
                             cout << "Quel attaque debloquer ?";
                             cin >> numero2;
-                        } while(numero2<0 || numero2 > jeu->getJoueur()->getArbreDeCompetence()->getBranche()[numero1]->getNbCompetence()-1);
-                        if (!(jeu->getJoueur()->getArbreDeCompetence()->getBranche()[numero1]->getCompetence()[numero2]->getDebloque()))
-                            jeu->getJoueur()->debloquerCompetence(numero1,numero2);
+                        } while(numero2<0 || numero2 > jeu.getJoueur()->getArbreDeCompetence()->getBranche()[numero1]->getNbCompetence()-1);
+                        if (!(jeu.getJoueur()->getArbreDeCompetence()->getBranche()[numero1]->getCompetence()[numero2]->getDebloque()))
+                            jeu.getJoueur()->debloquerCompetence(numero1,numero2);
                     }
                 }
             break;
@@ -190,9 +192,6 @@ int main(void) {
         //clear_screen();
 
     } while (option != 'q' && option != 'Q');
-
-    //Desallocation du personnage
-    delete jeu;
 
     return 0;
 }
