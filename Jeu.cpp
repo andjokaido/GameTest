@@ -82,7 +82,6 @@ Jeu::Jeu() {
             getline(liste_objet,nom_objet);
             getline(liste_objet,nom_objet);
 	    	liste_objet >> j_max;
-            cout << i << "=" << j_max<<endl;
 	    	liste_objet_tmp[i]=(Item***)malloc(j_max*sizeof(&tmp_objet));
 	    	for (int j=0;j<j_max;j++) {
 	    		liste_objet >> k_max;
@@ -91,7 +90,6 @@ Jeu::Jeu() {
                     getline(liste_objet,nom_objet);
 	    			getline(liste_objet,nom_objet);
                     liste_objet >> prix_pnj;
-                    cout << i << " " << j << " " << k << endl;
                     switch(i) {
 	    				case 0:
 	    					liste_objet_tmp[i][j][k]=new Item((i<<16|j<<8|k)&0xFFFFFF,nom_objet,prix_pnj,1);

@@ -33,7 +33,7 @@ int main(void) {
              << "1 : Inventaire" << endl
              << "2 : PNJ (vente/achat)" << endl
              << "3 : Arbre de competence" << endl
-             << "4 : Arbre de statistiques" << endl
+             //<< "4 : Arbre de statistiques" << endl
              << "Q/q : Quitter" << endl;
         cin >> option;
         //clear_screen();
@@ -180,10 +180,11 @@ int main(void) {
                     }
                 }
             break;
-
+            /*
             case '4' :
                 cout << "Not yet available" << endl;
             break;
+            */
         }
 
         //clear_screen();
